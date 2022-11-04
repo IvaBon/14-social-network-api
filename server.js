@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('./config/connection');
-const { User, Group } = require('./models');
+const User = require('./models/User');
+const Thought = require('./models/Thoughts');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -8,23 +9,55 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Create a user, and assign that user to a group
-// req.body:  { name, email, groupName }
-app.post("/user", async (req, res) => {
-  const newUser = await User.create({ name: req.body.name, email: req.body.email })
-  // find the specified group, and add this new user to the users array 
-  const updatedGroup = await Group.findOneAndUpdate(
-    { name: req.body.groupName },
-    { $push: { users: newUser._id } },
-    { new: true }
-  )
-  res.status(200).json(updatedGroup)
-})
+app.get('/user',async(req,res)=>{
+  try{
+    const allusers=await User.find({})
+    res.status(200).json(allusers)
+  }catch(err){
+    res.status(500).json(err);
+  }
+});
 
-app.get("/group", async (req, res) => {
-  const allGroups = await Group.find({}).populate("users")
-  res.status(200).json(allGroups)
-})
+app.get('/user/:id',async(req,res)=>{
+  try{
+    const allusers=await User.find({})
+    res.status(200).json(allusers)
+  }catch(err){
+    res.status(500).json(err);
+  }
+});
+
+app.post("/user", async (req, res) => {
+  try{
+    const newUser = await User.create({ username: req.body.name, email: req.body.email })
+    const updatedUser = await User.findOneAndUpdate(
+      {  },
+      { $push: { users: newUser._id } },
+      { new: true }
+    )
+    res.status(200).json(updatedGroup)
+  }catch(err){
+    res.status(500).json(err);
+  }
+});
+
+app.post("/user/:id", async (req, res) => {
+  try{
+    const newUser = await User.create({ username: req.body.name, email: req.body.email })
+    const updatedUser = await User.findOneAndUpdate(
+      {  },
+      { $push: { users: newUser._id } },
+      { new: true }
+    )
+    res.status(200).json(updatedGroup)
+  }catch(err){
+    res.status(500).json(err);
+  }
+});
+
+
+
+
 
 
 db.once('open', () => {
