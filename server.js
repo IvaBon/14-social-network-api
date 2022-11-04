@@ -9,6 +9,9 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+
+
+//get all
 app.get('/user',async(req,res)=>{
   try{
     const allusers=await User.find({})
@@ -18,6 +21,7 @@ app.get('/user',async(req,res)=>{
   }
 });
 
+// get by id
 app.get('/user/:id',async(req,res)=>{
   try{
     const allusers=await User.find({})
@@ -26,34 +30,93 @@ app.get('/user/:id',async(req,res)=>{
     res.status(500).json(err);
   }
 });
-
+//create user
 app.post("/user", async (req, res) => {
   try{
-    const newUser = await User.create({ username: req.body.name, email: req.body.email })
+    const newUser = await User.create( req.body )
+    res.status(200).json(newUser)
+  }catch(err){
+    res.status(500).json(err);
+  }
+});
+//update user by id
+app.put("/user/:id", async (req, res) => {
+  try{
     const updatedUser = await User.findOneAndUpdate(
-      {  },
-      { $push: { users: newUser._id } },
-      { new: true }
+       req.params.id ,
+       req.body,
+      { new: true },
     )
-    res.status(200).json(updatedGroup)
+    res.status(200).json(updatedUser)
+  }catch(err){
+    res.status(500).json(err);
+  }
+});
+//delete user by id
+app.delete('/user/:id', async (req, res) => {
+  try{
+    const result = await User.findOneAndDelete( req.params.id )
+    res.status(200).json(result);
+  }catch(err){
+    res.status(500).json(err);
+  }
+});
+//get all thoughts
+app.get('/thought',async(req,res)=>{
+  try{
+    const allThoughts=await Thought.find({})
+    res.status(200).json(allThoughts)
+  }catch(err){
+    res.status(500).json(err);
+  }
+})
+// get thought by id
+app.get('/thought/:id',async(req,res)=>{
+  try{
+    const allThoughts=await Thought.find({})
+    res.status(200).json(allThoughts)
+  }catch(err){
+    res.status(500).json(err);
+  }
+})
+//create thought
+app.post("/thought", async (req, res) => {
+  try{
+    const newThought = await Thought.create( req.body )
+    const insert= await User.findOneAndUpdate(
+      { }, //this does not work yet
+      {$push:{thoughts:newThought._id}},
+      {new:true}
+    )
+    res.status(200).json(insert)
+  }catch(err){
+    res.status(500).json(err);
+  }
+});
+// update thought
+app.put("/thought/:id", async (req, res) => {
+  try{
+    const updatedThought = await Thought.findOneAndUpdate(
+       req.params.id , //need to test this
+       req.body,
+      { new: true },
+    )
+    res.status(200).json(updatedThought)
+  }catch(err){
+    res.status(500).json(err);
+  }
+});
+//delete thought
+app.delete('/thought/:id', async (req, res) => {
+  try{
+    const result = await Thought.findOneAndDelete( req.params.id )
+    res.status(200).json(result);
   }catch(err){
     res.status(500).json(err);
   }
 });
 
-app.post("/user/:id", async (req, res) => {
-  try{
-    const newUser = await User.create({ username: req.body.name, email: req.body.email })
-    const updatedUser = await User.findOneAndUpdate(
-      {  },
-      { $push: { users: newUser._id } },
-      { new: true }
-    )
-    res.status(200).json(updatedGroup)
-  }catch(err){
-    res.status(500).json(err);
-  }
-});
+app.post('/user/')
 
 
 
