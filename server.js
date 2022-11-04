@@ -61,15 +61,22 @@ app.delete('/user/:id', async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+
+
+
 //get all thoughts
 app.get('/thought',async(req,res)=>{
   try{
     const allThoughts=await Thought.find({})
     res.status(200).json(allThoughts)
+    
   }catch(err){
+    console.log(err)
     res.status(500).json(err);
   }
-})
+});
+
 // get thought by id
 app.get('/thought/:id',async(req,res)=>{
   try{
@@ -84,10 +91,11 @@ app.post("/thought", async (req, res) => {
   try{
     const newThought = await Thought.create( req.body )
     const insert= await User.findOneAndUpdate(
-      { }, //this does not work yet
+      { _id:req.body.userId}, 
       {$push:{thoughts:newThought._id}},
       {new:true}
     )
+    console.log(insert)
     res.status(200).json(insert)
   }catch(err){
     res.status(500).json(err);
@@ -116,7 +124,13 @@ app.delete('/thought/:id', async (req, res) => {
   }
 });
 
-app.post('/user/')
+app.put('/user/:userId/friend/:friendId',async(req,res)=>{
+  try{
+    
+  }catch(err){
+    res.status(500).json(err);
+  }
+})
 
 
 
