@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('./config/connection');
 const User = require('./models/User');
 const Thought = require('./models/Thoughts');
+const { isObjectIdOrHexString } = require('mongoose');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -24,7 +25,7 @@ app.get('/user',async(req,res)=>{
 // get by id
 app.get('/user/:id',async(req,res)=>{
   try{
-    const allusers=await User.find({})
+    const allusers=await User.findById(req.params.id)
     res.status(200).json(allusers)
   }catch(err){
     res.status(500).json(err);
@@ -42,7 +43,7 @@ app.post("/user", async (req, res) => {
 //update user by id
 app.put("/user/:id", async (req, res) => {
   try{
-    const updatedUser = await User.findOneAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
        req.params.id ,
        req.body,
       { new: true },
@@ -55,7 +56,7 @@ app.put("/user/:id", async (req, res) => {
 //delete user by id
 app.delete('/user/:id', async (req, res) => {
   try{
-    const result = await User.findOneAndDelete( req.params.id )
+    const result = await User.findByIdAndRemove( req.params.id )
     res.status(200).json(result);
   }catch(err){
     res.status(500).json(err);
@@ -80,7 +81,7 @@ app.get('/thought',async(req,res)=>{
 // get thought by id
 app.get('/thought/:id',async(req,res)=>{
   try{
-    const allThoughts=await Thought.find({})
+    const allThoughts=await Thought.findById(req.params.id)
     res.status(200).json(allThoughts)
   }catch(err){
     res.status(500).json(err);
@@ -104,11 +105,12 @@ app.post("/thought", async (req, res) => {
 // update thought
 app.put("/thought/:id", async (req, res) => {
   try{
-    const updatedThought = await Thought.findOneAndUpdate(
-       req.params.id , //need to test this
+    const updatedThought = await Thought.findByIdAndUpdate(
+       req.params.id , 
        req.body,
       { new: true },
     )
+    console.log(updatedThought)
     res.status(200).json(updatedThought)
   }catch(err){
     res.status(500).json(err);
@@ -117,7 +119,7 @@ app.put("/thought/:id", async (req, res) => {
 //delete thought
 app.delete('/thought/:id', async (req, res) => {
   try{
-    const result = await Thought.findOneAndDelete( req.params.id )
+    const result = await Thought.findByIdAndDelete( req.params.id )
     res.status(200).json(result);
   }catch(err){
     console.log(err)
@@ -168,13 +170,15 @@ app.put('/thought/:thoughtId/reaction',async(req,res)=>{
   }
 })
 //delete reaction
-app.delete('/thought/:userId/reaction',async(req,res)=>{
+app.delete('/thought/:thoughtId/reaction/:reactionId',async(req,res)=>{
   try{
-    const delFriend=await User.findOneAndUpdate(
-    {_id:req.params.userId},
-    {$pull:{friends:req.params.friendId}},
-    {new:true}
+    const delFriend=await Thought.findOneAndUpdate(
+      {_id:req.params.thoughtId},
+      {$pull:{reactions:{reactionId: req.params._id}}},
+      {new:true}
+    
     )
+    console.log(delFriend)
     res.status(200).json(delFriend);
   }catch(err){
     console.log(err)
