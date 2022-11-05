@@ -120,14 +120,64 @@ app.delete('/thought/:id', async (req, res) => {
     const result = await Thought.findOneAndDelete( req.params.id )
     res.status(200).json(result);
   }catch(err){
+    console.log(err)
     res.status(500).json(err);
   }
 });
-
+//add friend
 app.put('/user/:userId/friend/:friendId',async(req,res)=>{
   try{
-    
+    const addFriend=await User.findOneAndUpdate(
+    {_id:req.params.userId},
+    {$push:{friends:req.params.friendId}},
+    {new:true}
+    )
+    res.status(200).json(addFriend);
   }catch(err){
+    console.log(err)
+    res.status(500).json(err);
+  }
+})
+//del friend
+app.delete('/user/:userId/friend/:friendId',async(req,res)=>{
+  try{
+    const delFriend=await User.findOneAndUpdate(
+    {_id:req.params.userId},
+    {$pull:{friends:req.params.friendId}},
+    {new:true}
+    )
+    res.status(200).json(delFriend);
+  }catch(err){
+    console.log(err)
+    res.status(500).json(err);
+  }
+})
+//create reactino
+app.put('/thought/:thoughtId/reaction',async(req,res)=>{
+  try{
+    const addReaction=await Thought.findOneAndUpdate(
+    {_id:req.params.thoughtId},
+    {$push:{reactions:req.body}},
+    {new:true}
+    )
+    console.log(addReaction)
+    res.status(200).json(addReaction);
+  }catch(err){
+    console.log(err)
+    res.status(500).json(err);
+  }
+})
+//delete reaction
+app.delete('/thought/:userId/reaction',async(req,res)=>{
+  try{
+    const delFriend=await User.findOneAndUpdate(
+    {_id:req.params.userId},
+    {$pull:{friends:req.params.friendId}},
+    {new:true}
+    )
+    res.status(200).json(delFriend);
+  }catch(err){
+    console.log(err)
     res.status(500).json(err);
   }
 })

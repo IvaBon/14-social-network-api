@@ -17,7 +17,6 @@ const reactionSchema = new Schema({
   createdAt:{
     type:Date,
     default:Date.now,
-    get: (date) => timeSince(date),
   },
 },
 {
@@ -38,7 +37,6 @@ const thoughtSchema = new Schema({
   createdAt:{
     type:Date,
     default:Date.now,
-    // get: (date) => timeSince(date), causing promblems
   },
   reactions:[reactionSchema],
 },
